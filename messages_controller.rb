@@ -4,8 +4,8 @@ class MessagesController < ApplicationController
   before_filter :auth_user!
   
   def index
-		if params[:sel_elem]
-			@sel_msg_id = params[:sel_elem]
+		if params[:element]
+			@sel_msg_id = params[:element]
 		end
 		@inbox_messages = Message.where(:current_receiver => current_user.id,:receiver_deleted=> false).desc(:created_at)
 		if !@inbox_messages.blank?
@@ -38,7 +38,6 @@ class MessagesController < ApplicationController
 		@unread_messages = Message.where(:status => false,:current_receiver => current_user.id).to_a
 		@count = @unread_messages.size
 		return @count
-		#render :nothing => true
 	end
 	def status_update
 		@message = Message.find(params[:id])
@@ -47,7 +46,6 @@ class MessagesController < ApplicationController
 	end
 	def my_status_update
 		@messages = Message.where(:current_receiver => params[:user_id], :current_sender => params[:lister_id])
-		puts @messages.count
 		@messages.each do |m|
 			m.update_attributes(:status => true)
 		end
@@ -76,6 +74,6 @@ class MessagesController < ApplicationController
 				mes.update_attributes(:receiver_deleted=> true)
 			end
 		end
-		redirect_to messages_path #, notice: 'Contact was successfully updated.'
+		redirect_to messages_path
 	end
 end
